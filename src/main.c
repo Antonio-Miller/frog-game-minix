@@ -4,6 +4,8 @@
 #include "I_O/video_card.h"
 #include "game.h"
 
+#define GAME_TICK 10
+
 static uint8_t timer_bit;
 static uint8_t kbd_bit;
 
@@ -48,8 +50,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE:
           if (msg.m_notify.interrupts & BIT(timer_bit)) {
-            timer_int_handler();
-            extern int global_counter;
+            global_counter++;
             if (global_counter % GAME_TICK == 0) {
               game_update();
             }

@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define GAME_TICK 250
 #define NR_LANES 10
 
 void game_init(unsigned x_res, unsigned y_res);
