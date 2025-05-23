@@ -4,13 +4,7 @@ PROG=proj
 VPATH = I_O
 
 # source code files to be compiled
-SRCS = main.c \
-       game.c \
-       timer.c \
-       keyboard.c \
-       video_card.c \
-       utils.c \
-       font8x8.c
+SRCS = main.c game.c timer.c keyboard.c video_card.c utils.c font8x8.c
 
 # additional compilation flags
 # "-Wall -Wextra -Werror -I . -std=c11 -Wno-unused-parameter" are already set
