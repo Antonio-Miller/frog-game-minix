@@ -1,7 +1,7 @@
 #include <lcom/lcf.h>
 
 #include "sprite.h"
-#include "video_card.h"
+#include "../I_O/video_card.h"
 
 Sprite *create_sprite(xpm_map_t xpm, int x, int y, int xspeed, int yspeed, enum xpm_image_type img_type) {
 	Sprite *sp = (Sprite *) malloc (sizeof(Sprite));
@@ -34,20 +34,10 @@ void destroy_sprite(Sprite *sp) {
 }
 
 int draw_sprite(Sprite *sp) {
-	uint16_t y = sp->y;
-	uint16_t x = sp->x;
-	uint16_t abs_final_y = y + sp->height;
-	uint16_t abs_final_x = x + sp->width;
-	uint32_t pos = 0;
-
-	while(y < abs_final_y){
-		for(int i = x; i < abs_final_x; i++){
-			vg_draw_pixel(i, y, *(sp->pixmap + pos));
-			pos++;
-		}
-		y++;
+	if(sp == NULL || sp->pixmap == NULL) {
+		return -1;
 	}
-
+	vg_draw_xpm(sp->x, sp->y, sp->width, sp->height, sp->pixmap);
 	return 0;
 }
 
@@ -88,4 +78,18 @@ int move_sprite(Sprite *sp) {
 	return 0;
 }
 
+int move_sprite_any(Sprite *sp, int x_direction, int y_direction) {
+	if(sp == NULL || sp->pixmap == NULL) {
+		return -1;
+	}
+	if(sp->x + sp->xspeed * x_direction < 0 || sp->x + sp->xspeed * x_direction + sp->width > (int32_t) get_h_res() - 1 ||
+	   sp->y + sp->yspeed * y_direction < 0 || sp->y + sp->yspeed * y_direction + sp->height > (int32_t) get_v_res() - 1) {
+		return -1; // Out of bounds
+	}
+	sp->x += sp->xspeed * x_direction;
+	sp->y += sp->yspeed * y_direction;
+	return 0;
+}
+
 //static int check_collision(Sprite *sp);
+

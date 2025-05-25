@@ -99,3 +99,4 @@ int(kbc_disable_keyboard)() {
   kbc_write_cmd_byte(cmd_byte);
   return 0;
 }
+

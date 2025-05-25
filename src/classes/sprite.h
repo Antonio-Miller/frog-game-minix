@@ -15,5 +15,11 @@ void destroy_sprite(Sprite *sp);
 int draw_sprite(Sprite *sp);
 int move_sprite(Sprite *sp);
 int move_sprite_restricted(Sprite *sp, int xf, int yf);
+/*
+@param x_direction can be -1 (up), 0 (don't move), or 1 (down)
+@param y_direction can be -1 (left), 0 (don't move), or 1 (right)
+*/
+int move_sprite_any(Sprite *sp, int x_direction, int y_direction);
 
 #endif // SPRITE
+

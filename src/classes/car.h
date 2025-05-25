@@ -1,4 +1,5 @@
 #include "sprite.h"
+#include "player.h"
 
 #ifndef CAR
 #define CAR
@@ -10,11 +11,17 @@ typedef struct {
 Car *create_car(int x, int y, int xspeed, int yspeed, enum xpm_image_type img_typ);
 void destroy_car(Car *cr);
 int draw_car(Car *cr);
-int move_car(Car *cr);
+/*
+@param x_direction can be -1 (up), 0 (don't move), or 1 (down)
+@param y_direction can be -1 (left), 0 (don't move), or 1 (right)
+*/
+int move_car(Car *cr, int x_direction, int y_direction);
+bool car_out_of_bounds(Car *cr, int h_res, int v_res);
+bool car_collides(Car *cr, Player *player);
 
 static xpm_row_t car_xpm[] = {
-"100 100 9 1",
-" 	c #FFFFFF",
+"100 96 9 1",
+" 	c #373737",
 ".	c #000000",
 "+	c #D40000",
 "@	c #C06105",
@@ -23,8 +30,6 @@ static xpm_row_t car_xpm[] = {
 "%	c #D8C025",
 "&	c #363333",
 "*	c #81A2A0",
-"                                                                                                    ",
-"                                                                                                    ",
 "                                                                                                    ",
 "                                                                                                    ",
 "                                                                                                    ",
@@ -120,8 +125,7 @@ static xpm_row_t car_xpm[] = {
 "                                                                                                    ",
 "                                                                                                    ",
 "                                                                                                    ",
-"                                                                                                    ",
-"                                                                                                    ",
 "                                                                                                    "};
 
 #endif // CAR
+

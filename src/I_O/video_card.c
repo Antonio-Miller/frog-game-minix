@@ -156,6 +156,19 @@ int(vg_draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
   return 0;
 }
 
+int(vg_draw_xpm)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t *pixmap){
+  uint8_t cbs = (bits_per_pixel + 7) / 8;
+  unsigned char *base = video_mem + (h_res * v_res * cbs * cur_buf);
+
+  for (uint16_t row = 0; row < height; row++) {
+        unsigned char *dst = base + ((y + row) * h_res + x) * cbs;
+        unsigned char *src = pixmap + row * width * cbs;
+        memcpy(dst, src, width * cbs);
+  }
+
+  return 0;
+}
+
 int(vg_flip_page)() {
   reg86_t r86;
   memset(&r86, 0, sizeof(r86));
@@ -180,9 +193,10 @@ int(vg_clean_page)() {
   return 0;
 }
 
-int(vg_new_screen)(uint32_t transparency_color) {
+int(vg_new_screen)() {
   vg_flip_page();
   cur_buf = !cur_buf;
   vg_clean_page();
   return 0;
 }
+
