@@ -10,7 +10,11 @@ SRCS = main.c \
        keyboard.c \
        video_card.c \
        utils.c \
-       menu.c \
+       sprite.c \
+       car.c \
+       player.c \
+       tunnel.c \
+       lane.c \
 
 # additional compilation flags
 # "-Wall -Wextra -Werror -I . -std=c11 -Wno-unused-parameter" are already set
@@ -22,3 +26,4 @@ LDADD += -llcf
 
 # include LCOM's makefile that does all the "heavy lifting"
 .include <minix.lcom.mk>
+
