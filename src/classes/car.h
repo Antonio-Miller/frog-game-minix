@@ -20,8 +20,8 @@ bool car_out_of_bounds(Car *cr, int h_res, int v_res);
 bool car_collides(Car *cr, Player *player);
 
 static xpm_row_t car_xpm[] = {
-"100 96 9 1",
-" 	c #373737",
+"100 93 9 1",
+" 	c #5E5E5E",
 ".	c #000000",
 "+	c #D40000",
 "@	c #C06105",
@@ -30,7 +30,6 @@ static xpm_row_t car_xpm[] = {
 "%	c #D8C025",
 "&	c #363333",
 "*	c #81A2A0",
-"                                                                                                    ",
 "                                                                                                    ",
 "                                                                                                    ",
 "                                                                                                    ",
@@ -108,8 +107,6 @@ static xpm_row_t car_xpm[] = {
 "          ...............                                                   ...............         ",
 "          ...............                                                   ...............         ",
 "          ...............                                                   ...............         ",
-"                                                                                                    ",
-"                                                                                                    ",
 "                                                                                                    ",
 "                                                                                                    ",
 "                                                                                                    ",

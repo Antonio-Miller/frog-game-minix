@@ -61,33 +61,42 @@ int move_sprite_restricted(Sprite *sp, int xf, int yf) {
 }
 
 int move_sprite(Sprite *sp) {
-	if(sp->xspeed > 0){
+	if(sp->xspeed > 0)
 		sp->x += sp->xspeed;
-	}
-	else {
+	else
 		sp->x++;
 
-	if(sp->yspeed > 0) {
+	if(sp->yspeed > 0)
 		sp->y += sp->yspeed;
-	}
 	else
 		sp->y++;
-	}
 
 	draw_sprite(sp);
 	return 0;
 }
 
 int move_sprite_any(Sprite *sp, int x_direction, int y_direction) {
-	if(sp == NULL || sp->pixmap == NULL) {
+	if(sp == NULL || sp->pixmap == NULL)
 		return -1;
-	}
-	if(sp->x + sp->xspeed * x_direction < 0 || sp->x + sp->xspeed * x_direction + sp->width > (int32_t) get_h_res() - 1 ||
-	   sp->y + sp->yspeed * y_direction < 0 || sp->y + sp->yspeed * y_direction + sp->height > (int32_t) get_v_res() - 1) {
-		return -1; // Out of bounds
-	}
-	sp->x += sp->xspeed * x_direction;
-	sp->y += sp->yspeed * y_direction;
+
+	int new_x = sp->x + sp->xspeed * x_direction;
+	int new_y = sp->y + sp->yspeed * y_direction;
+
+	if (new_x < 0)
+		new_x = 0;
+
+	else if (new_x + sp->width > (int32_t) get_h_res())
+		new_x = get_h_res() - sp->width;
+
+	if (new_y < 0)
+		new_y = 0;
+
+	else if (new_y + sp->height > (int32_t) get_v_res())
+		new_y = get_v_res() - sp->height;
+
+	sp->x = new_x;
+	sp->y = new_y;
+
 	return 0;
 }
 

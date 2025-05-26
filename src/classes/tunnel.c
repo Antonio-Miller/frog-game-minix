@@ -7,7 +7,7 @@ Tunnel *create_tunnel(int x, int y, int speed, enum xpm_image_type img_typ) {
     if (result == NULL)
         return NULL;
 
-    result->tunnel = create_sprite(tunnel_xpm, x, y, speed, 0, img_typ);
+    result->tunnel = create_sprite(tunnel_xpm, x, y, 0, speed, img_typ);
 
     if (result->tunnel == NULL) {
         free(result);
@@ -36,7 +36,7 @@ int draw_tunnel(Tunnel *tunnel) {
     return 0;
 }
 
-int move_tunnel(Tunnel *tunnel, int x_direction) {
-    move_sprite_any(tunnel->tunnel, x_direction, 0);
+int move_tunnel(Tunnel *tunnel, int y_direction) {
+    move_sprite_any(tunnel->tunnel, 0, y_direction);
     return 0;
 }

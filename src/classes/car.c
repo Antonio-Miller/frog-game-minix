@@ -7,7 +7,7 @@ Car *create_car(int x, int y, int xspeed, int yspeed, enum xpm_image_type img_ty
 	if(result == NULL)
 		return NULL;
 
-	result->car = create_sprite(car_xpm, x, y, xspeed, 0, img_type);
+	result->car = create_sprite(car_xpm, x, y, xspeed, yspeed, img_type);
 
 	if(result->car == NULL) {
 		free(result);
@@ -53,7 +53,7 @@ bool car_out_of_bounds(Car *cr, int h_res, int v_res) {
 	int width = cr->car->width;
 	int height = cr->car->height;
 
-	return (x < 0 || x + width > h_res - 1 || y  < 0 || y + height > v_res - 1);
+	return (x <= 0 || x + width >= h_res || y  <= 0 || y + height >= v_res);
 }
 
 bool car_collides(Car *cr, Player *player) {

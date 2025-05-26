@@ -1,5 +1,6 @@
 #include <lcom/lcf.h>
 #include "lane.h"
+#include "../I_O/video_card.h"
 
 static int generate_car(Lane *lane, int index) {
     if (lane == NULL || lane->lane == NULL) {
@@ -10,12 +11,29 @@ static int generate_car(Lane *lane, int index) {
         return 0; // A car already exists, no need to generate a new one
     }
 
-    bool is_right = lane->index % 2;   //If even, generate on left, else on right
-    int x = (SCREEN_WIDTH - CAR_WIDTH) * is_right;
+    int base_min_distance = CAR_WIDTH;
+    int random_offset = rand() % CAR_WIDTH;
+    int min_distance = base_min_distance + random_offset; // Min distance varies between CAR_WIDTH and 2*CAR_WIDTH
 
-    if(index != 0 && lane->car[index-1] != NULL &&((lane->car[index - 1]->car->x - CAR_WIDTH <= 0 && !is_right) || (lane->car[index - 1]->car->x + CAR_WIDTH >= lane->lane->width && is_right))) {
-        return 0; // There is a car too close, don't generate a new one
-    }
+    bool moves_left = lane->index % 2;   //If even, generate on left, else on right
+
+    int x = (SCREEN_WIDTH - CAR_WIDTH) * moves_left;
+
+    if (index != 0 && lane->car[index - 1] != NULL) {   //Check if cars are too close, in case it exists
+        int prev_x = lane->car[index - 1]->car->x;
+        int new_x = x;
+
+        if (moves_left) {   //Check left moving cars
+            if (prev_x - new_x < min_distance) {
+                return 0; // Too close
+            }
+        }
+        else {  //Check right moving cars
+            if (new_x - prev_x < min_distance) {
+                return 0; // Too close
+            }
+        }
+}
 
 
     int base_probability = 20;
@@ -28,7 +46,7 @@ static int generate_car(Lane *lane, int index) {
         int lane_ind_based_speed = lane->index / 2; // The further from the "initial" lane, the faster the car;
         int speed = base_x_speed + lane_ind_based_speed;
 
-        if(lane->index % 2) {
+        if(moves_left) {
             speed = -speed; // If the lane is odd, the car goes left
         }
 
@@ -56,7 +74,7 @@ Lane *create_lane(int lane_index, int x, int y, int yspeed, enum xpm_image_type 
     }
 
     result->tunnels[0] = create_tunnel(0, y, yspeed, img_typ);
-    result->tunnels[1] = create_tunnel(SCREEN_WIDTH - 1 - TUNNEL_WIDTH, y, yspeed, img_typ);
+    result->tunnels[1] = create_tunnel(SCREEN_WIDTH - TUNNEL_WIDTH, y, yspeed, img_typ);
     if(result->tunnels[0] == NULL || result->tunnels[1] == NULL) {
         destroy_lane(result);
         return NULL;
@@ -116,7 +134,7 @@ int move_lane(Lane *lane, int y_direction) {
     if (lane == NULL || lane->lane == NULL) {
         return -1;
     }
-    move_sprite_any(lane->lane, y_direction, 0);
+    move_sprite_any(lane->lane, 0, y_direction);
     move_tunnel(lane->tunnels[0], y_direction);
     move_tunnel(lane->tunnels[1], y_direction);
     for(int i = 0; i < lane->last_car; i++) {
@@ -134,7 +152,7 @@ int update_lane(Lane *lane, Player *player) {
 
     for(int i = 0; i < lane->last_car; i++) {
         if (lane->car[i] != NULL) {
-            move_car(lane->car[i], 0, 1);
+            move_car(lane->car[i], 1, 0);
         }
 
         if(car_collides(lane->car[i], player)) {
@@ -142,7 +160,7 @@ int update_lane(Lane *lane, Player *player) {
         }
     }
 
-    if (lane->car[0] != NULL && car_out_of_bounds(lane->car[0], lane->lane->width, lane->lane->height)) {
+    if (lane->car[0] != NULL && car_out_of_bounds(lane->car[0], get_h_res(), get_v_res())) {
         destroy_car(lane->car[0]); // Remove the car if it goes out of bounds
         lane->car[0] = lane->car[1]; // Shift the cars left
         lane->car[1] = lane->car[2];

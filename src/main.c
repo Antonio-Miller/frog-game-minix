@@ -4,7 +4,7 @@
 #include "I_O/video_card.h"
 #include "game.h"
 
-#define GAME_TICK 10
+#define GAME_TICK 2
 
 static uint8_t timer_bit;
 static uint8_t kbd_bit;
@@ -45,7 +45,6 @@ int(proj_main_loop)(int argc, char *argv[]) {
   message msg;
 
   while (!game_is_over()) {
-    printf("Game is running...\n");
     if (driver_receive(ANY, &msg, &ipc_status) != 0) continue;
     if (is_ipc_notify(ipc_status)) {
       switch (_ENDPOINT_P(msg.m_source)) {
