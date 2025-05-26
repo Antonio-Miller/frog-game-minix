@@ -1,14 +1,14 @@
 # name of the program (Minix service)
 PROG=proj
 
-VPATH = I_O
+VPATH = I_O:classes
 
 # source code files to be compiled
-SRCS = main.c game.c timer.c keyboard.c video_card.c utils.c font8x8.c
+SRCS = main.c game.c timer.c keyboard.c video_card.c utils.c font8x8.c sprite.c
 
 # additional compilation flags
 # "-Wall -Wextra -Werror -I . -std=c11 -Wno-unused-parameter" are already set
-CFLAGS += -pedantic
+CFLAGS += -pedantic -I classes -I I_O
 
 # list of library dependencies (for Lab 2, only LCF library)
 DPADD += ${LIBLCF}
