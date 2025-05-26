@@ -1,7 +1,7 @@
 #include "video_card.h"
 #include <lcom/lcf.h>
 static vbe_mode_info_t inf;
-static unsigned char *video_mem;
+unsigned char *video_mem;
 static unsigned h_res;
 static unsigned v_res;
 static unsigned bits_per_pixel;
