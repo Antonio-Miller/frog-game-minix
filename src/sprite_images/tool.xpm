@@ -1,5 +1,5 @@
 /* XPM */
-static char * tool_sword_b_xpm[] = {
+static char * tool_sword_xpm[] = {
 "64 64 73 1",
 " 	c None",
 ".	c #FDFDFD",

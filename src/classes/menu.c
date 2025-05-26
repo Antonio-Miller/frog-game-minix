@@ -2,11 +2,13 @@
 #include <lcom/lcf.h>
 #include"sprite.h"
 #include"../sprite_images/pointer.xpm"
+#include"../sprite_images/tool.xpm"
 #include"../sprite_images/cursor.xpm"
 #include"../sprite_images/title.xpm"
 #include"../sprite_images/play.xpm"
 #include"../sprite_images/exit.xpm"
 #include"../sprite_images/Untitled.xpm"
+
 
 
 
@@ -24,6 +26,13 @@ Sprite *create_mouse_pointer(int x, int y, enum xpm_image_type img_type) {
         return NULL;
     }
     return mouse;
+}
+Sprite *create_cursor(int x, int y, enum xpm_image_type img_type) {
+  Sprite *cursor = create_sprite((xpm_map_t)tool_sword_xpm, x, y, 0, 0, img_type);
+  if (cursor == NULL) {
+    return NULL;
+  }
+  return cursor;
 }
 
 Sprite *create_title(int x, int y, enum xpm_image_type img_type) {
@@ -63,20 +72,28 @@ static void draw_menu_title(void) {
   draw_sprite(title);
 }
 
-// Draws the mouse pointer sprite (creates it only once)
 static void draw_menu_mouse(void) {
-  static Sprite *mouse_pointer = NULL;
-  if (!mouse_pointer) {
-    mouse_pointer = create_mouse_pointer(mouse_x, mouse_y, XPM_8_8_8);
-    if (!mouse_pointer) {
-      return;
-    }
-  }
-  mouse_pointer->x = mouse_x;
-  mouse_pointer->y = mouse_y;
-  draw_sprite(mouse_pointer);
+  static Sprite *pointer = NULL;
+  static Sprite *cursor = NULL;
+  if (!pointer) pointer = create_mouse_pointer(mouse_x, mouse_y, XPM_8_8_8);
+  if (!cursor) cursor = create_cursor(mouse_x, mouse_y, XPM_8_8_8);
 
+  // Play button area
+  int play_x = 200, play_y = 200, play_w = 400, play_h = 100;
+  // Exit button area
+  int exit_x = 200, exit_y = 400, exit_w = 400, exit_h = 100;
+
+  bool over_play = (mouse_x >= play_x && mouse_x <= play_x + play_w &&
+                    mouse_y >= play_y && mouse_y <= play_y + play_h);
+  bool over_exit = (mouse_x >= exit_x && mouse_x <= exit_x + exit_w &&
+                    mouse_y >= exit_y && mouse_y <= exit_y + exit_h);
+
+  Sprite *to_draw = (over_play || over_exit) ? cursor : pointer;
+  to_draw->x = mouse_x;
+  to_draw->y = mouse_y;
+  draw_sprite(to_draw);
 }
+
 static void draw_play_button(void) {
   static Sprite *play_button = NULL;
   if (!play_button) {
