@@ -127,7 +127,6 @@ while (!start_game) {
       }
     }
   }
-
   // Cleanup
   timer_unsubscribe_int();
   kbd_unsubscribe_int();
