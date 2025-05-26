@@ -1,13 +1,13 @@
 #include <lcom/lcf.h>
 #include "player.h"
 
-Player *create_player(int x, int y, int xspeed, enum xpm_image_type img_typ) {
+Player *create_player(int x, int y, int xspeed, int yspeed, enum xpm_image_type img_typ) {
     Player *result = (Player *) malloc(sizeof(Player));
 
     if (result == NULL)
         return NULL;
 
-    result->player = create_sprite(frog_xpm, x, y, xspeed, 0, img_typ);
+    result->player = create_sprite(frog_xpm, x, y, xspeed, yspeed, img_typ);
 
     if (result->player == NULL) {
         free(result);
@@ -43,5 +43,13 @@ int move_player_x(Player *player, int x_direction){
         return -1;
     }
     move_sprite_any(player->player, x_direction, 0);
+    return 0;
+}
+
+int move_player_y(Player *player, int y_direction) {
+    if (player == NULL || player->player == NULL) {
+        return -1;
+    }
+    move_sprite_any(player->player, 0, y_direction);
     return 0;
 }

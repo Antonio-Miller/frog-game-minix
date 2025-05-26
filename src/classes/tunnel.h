@@ -12,9 +12,9 @@ void destroy_tunnel(Tunnel *tunnel);
 int draw_tunnel(Tunnel *tunnel);
 
 /*
-@param x_direction can be -1 (left), 0 (don't move), or 1 (right)
+@param y_direction can be -1 (up), 0 (don't move), or 1 (down)
 */
-int move_tunnel(Tunnel *tunnel, int x_direction);
+int move_tunnel(Tunnel *tunnel, int y_direction);
 
 /* XPM */
 static xpm_row_t tunnel_xpm[] = {
