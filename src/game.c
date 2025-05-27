@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include "classes/lane.h"
 #include "classes/player.h"
+#include "classes/points.h"
 
 // Game state
 static bool game_over = false;
@@ -21,6 +22,7 @@ void game_draw_screen() {
     }
   }
   draw_player(player);
+  draw_points();
   vg_new_screen();
 }
 
@@ -84,6 +86,8 @@ int game_init(unsigned x_res, unsigned y_res) {
     return -1;
   }
 
+  points_init();
+
   return 0;
 }
 
@@ -94,13 +98,14 @@ void game_update() {
 
 void game_handle_input(uint8_t scancode) {
   switch (scancode) {
-    case 0x48: // up)
+    case 0x48: // up
       if(cur_lane_index - bottom_lane_index > 2)
         move_up();
       else
         move_player_y(player, -1);
 
       cur_lane_index++;
+      points_up();
       break;
     case 0x50: // down
       if(bottom_lane_index == 0) // Prevent moving down if at the bottom
@@ -111,6 +116,7 @@ void game_handle_input(uint8_t scancode) {
         move_player_y(player, 1);
 
       cur_lane_index--;
+      points_down();
       break;
     case 0x4B: // left
       move_player_x(player, -1);

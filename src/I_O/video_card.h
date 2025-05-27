@@ -2,7 +2,6 @@
 #define _VIDEO_CARD_H_
 
 #include <lcom/lcf.h>
-
 #define DIR_COLOR_MEM_MODEL 0x06 /**< @brief MemoryModel value for Direct color modes */
 #define IND_COLOR_MEM_MODEL 0x04 /**< @brief MemoryModel value for Indexed color modes (packed pixel) */
 

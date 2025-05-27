@@ -35,7 +35,6 @@ static int generate_car(Lane *lane, int index) {
         }
 }
 
-
     int base_probability = 20;
     int lane_probability = lane->index * 5;
     int final_probability = base_probability + lane_probability;
