@@ -7,7 +7,11 @@ Car *create_car(int x, int y, int xspeed, int yspeed, enum xpm_image_type img_ty
 	if(result == NULL)
 		return NULL;
 
-	result->car = create_sprite(car_xpm, x, y, xspeed, yspeed, img_type);
+	if (xspeed >= 0) { //right direction
+		result->car = create_sprite(cars_right_xpm[0], x, y, xspeed, yspeed, img_type);
+	} else { //left direction
+		result->car = create_sprite(cars_left_xpm[0], x, y, xspeed, yspeed, img_type);
+	}
 
 	if(result->car == NULL) {
 		free(result);
