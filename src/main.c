@@ -3,11 +3,22 @@
 #include "I_O/keyboard.h"
 #include "I_O/video_card.h"
 #include "game.h"
-
-#define GAME_TICK 2
+#include "I_O/mouse.h"
+#include "classes/menu.h"
+#define GAME_TICK 10
 
 static uint8_t timer_bit;
 static uint8_t kbd_bit;
+static uint8_t mouse_bit;
+
+
+extern struct packet mouse_packet;
+extern int mouse_x, mouse_y;
+
+
+typedef enum { MENU_MODE, GAME_MODE } ProgramMode;
+ProgramMode mode = MENU_MODE;
+
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -34,16 +45,63 @@ int main(int argc, char *argv[]) {
 }
 
 int(proj_main_loop)(int argc, char *argv[]) {
-  /* Initialize game and devices */
+  // Inicializar vídeo
   if (vg_init(0x115) == NULL) return 1;
-  if(game_init(get_h_res(), get_v_res())) return 1;
 
+  // Subscrever timer e mouse para o menu
   if (timer_subscribe_int(&timer_bit)) return 1;
-  if (kbd_subscribe_int(&kbd_bit)) return 1;
+  if (mouse_subscribe_int(&mouse_bit)) return 1;
+  m_enable_data_reporting();
 
   int ipc_status;
   message msg;
+  bool start_game = false;
 
+  // Loop do MENU
+  while (!start_game) {
+      if (driver_receive(ANY, &msg, &ipc_status) != 0) continue;
+      if (is_ipc_notify(ipc_status)) {
+        switch (_ENDPOINT_P(msg.m_source)) {
+          case HARDWARE:
+            if (msg.m_notify.interrupts & BIT(timer_bit)) {
+              game_draw_menu();
+            }
+            if (msg.m_notify.interrupts & BIT(mouse_bit)) {
+              mouse_ih();
+              // Play button
+              int play_x = 200, play_y = 200, play_w = 400, play_h = 100;
+              // Exit button
+              int exit_x = 200, exit_y = 400, exit_w = 400, exit_h = 100;
+
+              if (mouse_packet.lb &&
+                  mouse_x >= play_x && mouse_x <= play_x + play_w &&
+                  mouse_y >= play_y && mouse_y <= play_y + play_h) {
+                start_game = true;
+              }
+              if (mouse_packet.lb &&
+                  mouse_x >= exit_x && mouse_x <= exit_x + exit_w &&
+                  mouse_y >= exit_y && mouse_y <= exit_y + exit_h) {
+                // Exit action: for example, return or break the loop
+                vg_exit();
+                return 0; // or set a flag to exit the program
+              }
+            }
+            break;
+          default:
+            break;
+        }
+      }
+  }
+
+  // Sair do menu: unsubscribe mouse, subscribe teclado
+  m_disable_data_reporting();
+  mouse_unsubscribe_int();
+  if (kbd_subscribe_int(&kbd_bit)) return 1;
+
+  // Inicializar o jogo
+  if(game_init(get_h_res(), get_v_res())) return 1;
+
+  // Loop do JOGO
   while (!game_is_over()) {
     if (driver_receive(ANY, &msg, &ipc_status) != 0) continue;
     if (is_ipc_notify(ipc_status)) {
@@ -52,8 +110,8 @@ int(proj_main_loop)(int argc, char *argv[]) {
           if (msg.m_notify.interrupts & BIT(timer_bit)) {
             global_counter++;
             if (global_counter % GAME_TICK == 0) {
-				global_counter = 0;
-            	game_update();
+              global_counter = 0;
+              game_update();
             }
           }
           if (msg.m_notify.interrupts & BIT(kbd_bit)) {
@@ -69,7 +127,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
       }
     }
   }
-
+  // Cleanup
   timer_unsubscribe_int();
   kbd_unsubscribe_int();
   vg_exit();
