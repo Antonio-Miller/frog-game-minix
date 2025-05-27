@@ -58,40 +58,40 @@ int(proj_main_loop)(int argc, char *argv[]) {
   bool start_game = false;
 
   // Loop do MENU
-while (!start_game) {
-    if (driver_receive(ANY, &msg, &ipc_status) != 0) continue;
-    if (is_ipc_notify(ipc_status)) {
-      switch (_ENDPOINT_P(msg.m_source)) {
-        case HARDWARE:
-          if (msg.m_notify.interrupts & BIT(timer_bit)) {
-            game_draw_menu();
-          }
-          if (msg.m_notify.interrupts & BIT(mouse_bit)) {
-            mouse_ih();
-            // Play button
-            int play_x = 200, play_y = 200, play_w = 400, play_h = 100;
-            // Exit button
-            int exit_x = 200, exit_y = 400, exit_w = 400, exit_h = 100;
+  while (!start_game) {
+      if (driver_receive(ANY, &msg, &ipc_status) != 0) continue;
+      if (is_ipc_notify(ipc_status)) {
+        switch (_ENDPOINT_P(msg.m_source)) {
+          case HARDWARE:
+            if (msg.m_notify.interrupts & BIT(timer_bit)) {
+              game_draw_menu();
+            }
+            if (msg.m_notify.interrupts & BIT(mouse_bit)) {
+              mouse_ih();
+              // Play button
+              int play_x = 200, play_y = 200, play_w = 400, play_h = 100;
+              // Exit button
+              int exit_x = 200, exit_y = 400, exit_w = 400, exit_h = 100;
 
-            if (mouse_packet.lb &&
-                mouse_x >= play_x && mouse_x <= play_x + play_w &&
-                mouse_y >= play_y && mouse_y <= play_y + play_h) {
-              start_game = true;
+              if (mouse_packet.lb &&
+                  mouse_x >= play_x && mouse_x <= play_x + play_w &&
+                  mouse_y >= play_y && mouse_y <= play_y + play_h) {
+                start_game = true;
+              }
+              if (mouse_packet.lb &&
+                  mouse_x >= exit_x && mouse_x <= exit_x + exit_w &&
+                  mouse_y >= exit_y && mouse_y <= exit_y + exit_h) {
+                // Exit action: for example, return or break the loop
+                vg_exit();
+                return 0; // or set a flag to exit the program
+              }
             }
-            if (mouse_packet.lb &&
-                mouse_x >= exit_x && mouse_x <= exit_x + exit_w &&
-                mouse_y >= exit_y && mouse_y <= exit_y + exit_h) {
-              // Exit action: for example, return or break the loop
-              vg_exit();
-              return 0; // or set a flag to exit the program
-            }
-          }
-          break;
-        default:
-          break;
+            break;
+          default:
+            break;
+        }
       }
-    }
-}
+  }
 
   // Sair do menu: unsubscribe mouse, subscribe teclado
   m_disable_data_reporting();
