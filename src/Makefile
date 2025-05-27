@@ -4,17 +4,7 @@ PROG=proj
 VPATH = I_O:classes
 
 # source code files to be compiled
-SRCS = main.c \
-       game.c \
-       timer.c \
-       keyboard.c \
-       video_card.c \
-       utils.c \
-       sprite.c \
-       car.c \
-       player.c \
-       tunnel.c \
-       lane.c \
+SRCS = main.c game.c timer.c keyboard.c video_card.c utils.c sprite.c car.c player.c tunnel.c lane.c points.c
 
 # additional compilation flags
 # "-Wall -Wextra -Werror -I . -std=c11 -Wno-unused-parameter" are already set
