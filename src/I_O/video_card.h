@@ -1,9 +1,10 @@
 #ifndef _VIDEO_CARD_H_
 #define _VIDEO_CARD_H_
+
 #include <lcom/lcf.h>
-#include "font8x8.h"
 #define DIR_COLOR_MEM_MODEL 0x06 /**< @brief MemoryModel value for Direct color modes */
 #define IND_COLOR_MEM_MODEL 0x04 /**< @brief MemoryModel value for Indexed color modes (packed pixel) */
+
 unsigned(get_h_res)();
 unsigned(get_v_res)();
 unsigned(get_bits_per_pixel)();
@@ -14,8 +15,7 @@ int(vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color);
 int(vg_draw_pixel)(uint16_t x, uint16_t y, uint32_t color);
 int(vg_new_screen)();
 int(vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color);
+int(vg_draw_xpm)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t *pixmap);
 int vg_flip_page();
-int(vg_draw_pixmap)(const xpm_row_t pixmap[], uint16_t x, uint16_t y, uint16_t width, uint16_t height);
-void (vg_draw_text)(const char *text, uint16_t x, uint16_t y, uint32_t color);
-void (vg_draw_char)(char c, uint16_t x, uint16_t y, uint32_t color);
 #endif
+

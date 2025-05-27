@@ -84,3 +84,4 @@ int(timer_display_conf)(uint8_t timer, uint8_t st, enum timer_status_field field
   timer_print_config(timer, field, conf);
   return 0;
 }
+

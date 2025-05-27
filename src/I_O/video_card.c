@@ -177,6 +177,19 @@ int(vg_draw_pixel)(uint16_t x, uint16_t y, uint32_t color)
   return 0;
 }
 
+int(vg_draw_xpm)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t *pixmap){
+  uint8_t cbs = (bits_per_pixel + 7) / 8;
+  unsigned char *base = video_mem + (h_res * v_res * cbs * cur_buf);
+
+  for (uint16_t row = 0; row < height; row++) {
+        unsigned char *dst = base + ((y + row) * h_res + x) * cbs;
+        unsigned char *src = pixmap + row * width * cbs;
+        memcpy(dst, src, width * cbs);
+  }
+
+  return 0;
+}
+
 int(vg_flip_page)()
 {
   reg86_t r86;
@@ -204,73 +217,10 @@ int(vg_clean_page)()
   return 0;
 }
 
-int(vg_new_screen)(uint32_t transparency_color)
+int(vg_new_screen)()
 {
   vg_flip_page();
   cur_buf = !cur_buf;
   vg_clean_page();
   return 0;
-}
-
-int(vg_draw_pixmap)(const xpm_row_t pixmap[], uint16_t x, uint16_t y,
-                   uint16_t total_width, uint16_t total_height) {
-    if (!pixmap) {
-        vg_draw_rectangle(x, y, total_width, total_height, 0xFF0000);
-        return 1;
-    }
-
-    /* Parse header: number of columns, rows, and colors */
-    int cols, rows, ncolors;
-    if (sscanf(pixmap[0], "%d %d %d", &cols, &rows, &ncolors) != 3) {
-        fprintf(stderr, "Invalid pixmap header: '%s'\n", pixmap[0]);
-        vg_draw_rectangle(x, y, total_width, total_height, 0x00FF00);
-        return 2;
-    }
-
-    /* Build symbol -> color map */
-    uint32_t color_map[5] = {0x000000, 0xFF0000, 0x00FF00, 0x0000FF, 0xFFFFFF};
-
-    /* Calculate pixel block size */
-    uint16_t block_w = total_width / cols;
-    uint16_t block_h = total_height / rows;
-    if (block_w == 0 || block_h == 0) {
-        fprintf(stderr, "Total dimensions too small for pixmap grid\n");
-        return 4;
-    }
-
-    /* Draw each block as a filled rectangle */
-    int data_start = 1 + ncolors;
-    for (int r = 0; r < rows; r++) {
-        const char *line = pixmap[data_start + r];
-        for (int c = 0; c < cols; c++) {
-            unsigned char sym = line[c];
-            uint32_t colval = color_map[sym];
-            uint16_t px = x + c * block_w;
-            uint16_t py = y + r * block_h;
-            if (vg_draw_rectangle(px, py, block_w, block_h, colval) != 0) {
-                fprintf(stderr, "Failed drawing rectangle at (%u,%u)\n", px, py);
-                return 5;
-            }
-        }
-    }
-    return 0;
-}
-
-void (vg_draw_char)(char c, uint16_t x, uint16_t y, uint32_t color) {
-  const uint8_t *bitmap = font8x8_basic[(int)c];
-  for (int row = 0; row < 8; ++row) {
-    for (int col = 0; col < 8; ++col) {
-      if (bitmap[row] & (1 << col)) {
-        vg_draw_pixel(x + col, y + row, color);
-      }
-    }
-  }
-}
-
-void (vg_draw_text)(const char *text, uint16_t x, uint16_t y, uint32_t color) {
-  while (*text) {
-    vg_draw_char(*text, x, y, color);
-    x += 8;
-    text++;
-  }
 }
