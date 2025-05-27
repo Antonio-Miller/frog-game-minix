@@ -20,6 +20,17 @@ Sprite *create_sprite(xpm_map_t xpm, int x, int y, int xspeed, int yspeed, enum 
 	sp->y = y;
 	sp->xspeed = xspeed;
 	sp->yspeed = yspeed;
+	sp->transparency_color = 0;
+
+	return sp;
+}
+
+Sprite *create_sprite_transparency(xpm_map_t xpm, int x, int y, int xspeed, int yspeed, enum xpm_image_type img_type, uint32_t transparency_color) {
+	Sprite *sp = create_sprite(xpm, x, y, xspeed, yspeed, img_type);
+	if(sp == NULL)
+		return NULL;
+
+	sp->transparency_color = transparency_color;
 
 	return sp;
 }
@@ -37,7 +48,14 @@ int draw_sprite(Sprite *sp) {
 	if(sp == NULL || sp->pixmap == NULL) {
 		return -1;
 	}
-	vg_draw_xpm(sp->x, sp->y, sp->width, sp->height, sp->pixmap);
+
+	if(sp->transparency_color == 0) {
+		vg_draw_xpm(sp->x, sp->y, sp->width, sp->height, sp->pixmap);
+	}
+	else {
+		vg_draw_xpm_with_transparency(sp->x, sp->y, sp->width, sp->height, sp->pixmap, sp->transparency_color);
+	}
+	
 	return 0;
 }
 
@@ -100,5 +118,16 @@ int move_sprite_any(Sprite *sp, int x_direction, int y_direction) {
 	return 0;
 }
 
+bool check_collision(Sprite *sp1, Sprite *sp2) {
+	if (sp1 == NULL || sp2 == NULL)
+		return false;
+
+	int x1 = sp1->x;
+	int y1 = sp1->y;
+	int x2 = sp2->x;
+	int y2 = sp2->y;
+
+	return (x1 < x2 + sp2->width && x1 + sp1->width > x2 && y1 < y2 + sp2->height && y1 + sp1->height > y2);
+}
 //static int check_collision(Sprite *sp);
 

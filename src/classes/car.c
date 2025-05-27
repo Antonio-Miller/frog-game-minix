@@ -61,22 +61,9 @@ bool car_out_of_bounds(Car *cr, int h_res, int v_res) {
 }
 
 bool car_collides(Car *cr, Player *player) {
-	if(cr == NULL || cr->car == NULL || player == NULL || player->player == NULL) {
+	if(cr == NULL || player == NULL) {
 		return false; // If either car or player is not initialized, no collision
 	}
-	int car_x = cr->car->x;
-	int car_y = cr->car->y;
-	int car_width = cr->car->width;
-	int car_height = cr->car->height;
-
-	int player_x = player->player->x;
-	int player_y = player->player->y;
-	int player_width = player->player->width;
-	int player_height = player->player->height;
-
-	return (car_x < player_x + player_width &&
-			car_x + car_width > player_x &&
-			car_y < player_y + player_height &&
-			car_y + car_height > player_y);
+	return check_collision(cr->car, player->player);
 }
 

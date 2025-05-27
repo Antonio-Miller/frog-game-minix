@@ -5,18 +5,16 @@
 #include "game.h"
 #include "I_O/mouse.h"
 #include "classes/menu.h"
-#define GAME_TICK 10
+#define GAME_TICK 2
 
 static uint8_t timer_bit;
 static uint8_t kbd_bit;
 static uint8_t mouse_bit;
 
-
 extern struct packet mouse_packet;
 extern int mouse_x, mouse_y;
 
-
-typedef enum { MENU_MODE, GAME_MODE } ProgramMode;
+typedef enum {MENU_MODE, GAME_MODE, QUIT} ProgramMode;
 ProgramMode mode = MENU_MODE;
 
 
@@ -56,41 +54,41 @@ int(proj_main_loop)(int argc, char *argv[]) {
   int ipc_status;
   message msg;
   bool start_game = false;
-
+  bool exit = false;
+  
   // Loop do MENU
-  while (!start_game) {
-      if (driver_receive(ANY, &msg, &ipc_status) != 0) continue;
-      if (is_ipc_notify(ipc_status)) {
-        switch (_ENDPOINT_P(msg.m_source)) {
-          case HARDWARE:
-            if (msg.m_notify.interrupts & BIT(timer_bit)) {
-              game_draw_menu();
-            }
-            if (msg.m_notify.interrupts & BIT(mouse_bit)) {
-              mouse_ih();
-              // Play button
-              int play_x = 200, play_y = 200, play_w = 400, play_h = 100;
-              // Exit button
-              int exit_x = 200, exit_y = 400, exit_w = 400, exit_h = 100;
-
-              if (mouse_packet.lb &&
-                  mouse_x >= play_x && mouse_x <= play_x + play_w &&
-                  mouse_y >= play_y && mouse_y <= play_y + play_h) {
-                start_game = true;
-              }
-              if (mouse_packet.lb &&
-                  mouse_x >= exit_x && mouse_x <= exit_x + exit_w &&
-                  mouse_y >= exit_y && mouse_y <= exit_y + exit_h) {
-                // Exit action: for example, return or break the loop
-                vg_exit();
-                return 0; // or set a flag to exit the program
+  while (!start_game && !exit) {
+    if (driver_receive(ANY, &msg, &ipc_status) != 0) continue;
+    if (is_ipc_notify(ipc_status)) {
+      switch (_ENDPOINT_P(msg.m_source)) {
+        case HARDWARE:
+          if (msg.m_notify.interrupts & BIT(timer_bit)) {
+            game_draw_menu();
+          }
+          if (msg.m_notify.interrupts & BIT(mouse_bit)) {
+            mouse_ih();
+            if(mouse_packet.lb) {
+              MenuOption option = select_menu_option();
+              switch (option) {
+                case PLAY:
+                  start_game = true;
+                  mode = GAME_MODE;
+                  break;
+                
+                case EXIT:
+                  mode = QUIT;
+                  exit = true;
+                  break;
+                default:
+                  break;
               }
             }
-            break;
-          default:
-            break;
-        }
+          }
+          break;
+        default:
+          break;
       }
+    }
   }
 
   // Sair do menu: unsubscribe mouse, subscribe teclado
@@ -102,7 +100,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
   if(game_init(get_h_res(), get_v_res())) return 1;
 
   // Loop do JOGO
-  while (!game_is_over()) {
+  while (!game_is_over() && !exit) {
     if (driver_receive(ANY, &msg, &ipc_status) != 0) continue;
     if (is_ipc_notify(ipc_status)) {
       switch (_ENDPOINT_P(msg.m_source)) {

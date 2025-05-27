@@ -190,6 +190,25 @@ int(vg_draw_xpm)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_
   return 0;
 }
 
+// Only works for 0x115 mode
+int(vg_draw_xpm_with_transparency)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t *pixmap, uint32_t transparency_color) {
+  uint8_t cbs = (bits_per_pixel + 7) / 8;
+  for (uint16_t row = 0; row < height; row++) {
+    //Beginning of the row
+    unsigned char *pos = pixmap + row * width * cbs;
+
+    for (uint16_t col = 0; col < width; col++) {
+      uint32_t pixel_color = *pos + (*(pos + 1) << 8) + (*(pos + 2) << 16);
+      if(pixel_color != transparency_color) {
+        vg_draw_pixel(x + col, y + row, pixel_color);
+      }
+      pos +=cbs;
+    }
+  }
+
+  return 0;
+}
+
 int(vg_flip_page)()
 {
   reg86_t r86;
