@@ -14,7 +14,7 @@ static uint8_t mouse_bit;
 extern struct packet mouse_packet;
 extern int mouse_x, mouse_y;
 
-typedef enum {MENU_MODE, GAME_MODE, QUIT} ProgramMode;
+typedef enum {MENU_MODE, GAME_MODE, INSTRUCTIONS_MODE, QUIT} ProgramMode;
 ProgramMode mode = MENU_MODE;
 
 
@@ -53,42 +53,79 @@ int(proj_main_loop)(int argc, char *argv[]) {
 
   int ipc_status;
   message msg;
-  bool start_game = false;
   bool exit = false;
+
   
-  // Loop do MENU
-  while (!start_game && !exit) {
-    if (driver_receive(ANY, &msg, &ipc_status) != 0) continue;
-    if (is_ipc_notify(ipc_status)) {
-      switch (_ENDPOINT_P(msg.m_source)) {
-        case HARDWARE:
-          if (msg.m_notify.interrupts & BIT(timer_bit)) {
-            game_draw_menu();
-          }
-          if (msg.m_notify.interrupts & BIT(mouse_bit)) {
-            mouse_ih();
-            if(mouse_packet.lb) {
-              MenuOption option = select_menu_option();
-              switch (option) {
-                case PLAY:
-                  start_game = true;
-                  mode = GAME_MODE;
-                  break;
-                
-                case EXIT:
-                  mode = QUIT;
-                  exit = true;
-                  break;
-                default:
-                  break;
+  while (!exit) {
+    bool start_game = false;
+    bool in_menu = true;
+
+    // MENU LOOP
+    while (in_menu && !start_game && !exit) {
+      if (driver_receive(ANY, &msg, &ipc_status) != 0) continue;
+      if (is_ipc_notify(ipc_status)) {
+        switch (_ENDPOINT_P(msg.m_source)) {
+          case HARDWARE:
+            if (msg.m_notify.interrupts & BIT(timer_bit)) {
+              game_draw_menu();
+            }
+            if (msg.m_notify.interrupts & BIT(mouse_bit)) {
+              mouse_ih();
+              if(mouse_packet.lb) {
+                MenuOption option = select_menu_option();
+                switch (option) {
+                  case PLAY:
+                    start_game = true;
+                    mode = GAME_MODE;
+                    break;
+                  case INSTRUCTIONS:
+                    mode = INSTRUCTIONS_MODE;
+                    in_menu = false;
+                    break;
+                  case EXIT:
+                    mode = QUIT;
+                    exit = true;
+                    break;
+                  default:
+                    break;
+                }
               }
             }
-          }
-          break;
-        default:
-          break;
+            break;
+          default:
+            break;
+        }
       }
     }
+
+    // INSTRUCTIONS LOOP
+    while (mode == INSTRUCTIONS_MODE && !exit) {
+      if (driver_receive(ANY, &msg, &ipc_status) != 0) continue;
+      if (is_ipc_notify(ipc_status)) {
+        switch (_ENDPOINT_P(msg.m_source)) {
+          case HARDWARE:
+            if (msg.m_notify.interrupts & BIT(timer_bit)) {
+              draw_instructions_screen();
+            }
+            if (msg.m_notify.interrupts & BIT(mouse_bit)) {
+              mouse_ih();
+              if (mouse_packet.lb && back_button_clicked()) {
+                mode = MENU_MODE;
+                in_menu = true;
+                break;
+              }
+            }
+            break;
+          default:
+            break;
+        }
+      }
+    }
+
+    // If PLAY  selected -> break to start the game
+    if (start_game) break;
+    // If EXIT  selected -> break to cleanup
+    if (exit) break;
   }
 
   // Sair do menu: unsubscribe mouse, subscribe teclado
