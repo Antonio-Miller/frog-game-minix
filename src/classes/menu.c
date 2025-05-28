@@ -33,14 +33,6 @@ static void create_exit_button(int x, int y, enum xpm_image_type img_type) {
   exit_button = create_sprite(exit_xpm, x, y, 0, 0, img_type);
 }
 
-static void create_instructions_button(int x, int y, enum xpm_image_type img_type) {
-  instructions_button = create_sprite(instructions_xpm, x, y, 0, 0, img_type);
-}
-
-static void create_back_button(int x, int y, enum xpm_image_type img_type) {
-  back_button = create_sprite(back_xpm, x, y, 0, 0, img_type);
-}
-
 static void draw_menu_background() {
   if (background == NULL) 
     create_background(XPM_8_8_8);
@@ -67,28 +59,6 @@ static void draw_menu_mouse() {
   draw_sprite(to_draw);
 }
 
-void draw_instructions_screen() {
-  draw_sprite(background); 
-  if (back_button == NULL)
-    create_back_button(350, 520, XPM_8_8_8); 
-  draw_sprite(back_button);
-
-  bool over_back = mouse_x >= back_button->x && mouse_x <= back_button->x + back_button->width &&
-                   mouse_y >= back_button->y && mouse_y <= back_button->y + back_button->height;
-
-  Sprite *mouse_sprite = over_back ? pointer : cursor;
-  if (mouse_sprite == NULL) {
-    if (over_back)
-      create_pointer(mouse_x, mouse_y, XPM_8_8_8);
-    else
-      create_cursor(mouse_x, mouse_y, XPM_8_8_8);
-    mouse_sprite = over_back ? pointer : cursor;
-  }
-  mouse_sprite->x = mouse_x;
-  mouse_sprite->y = mouse_y;
-  draw_sprite(mouse_sprite);
-}
-
 static void draw_play_button() {
   if (play_button == NULL)
     create_play_button(200, 225, XPM_8_8_8);
@@ -103,9 +73,13 @@ static void draw_exit_button() {
   draw_sprite(exit_button);
 }
 
+static void create_instructions_button(int x, int y, enum xpm_image_type img_type) {
+  instructions_button = create_sprite_transparency(instructions_xpm, x, y, 0, 0, img_type, 0xFF00FF);
+}
+
 static void draw_instructions_button() {
   if (instructions_button == NULL)
-    create_instructions_button(250, 425, XPM_8_8_8); 
+    create_instructions_button(240, 450, XPM_8_8_8); 
   draw_sprite(instructions_button);
 }
 
@@ -153,7 +127,62 @@ MenuOption select_menu_option() {
   return NEITHER;
 }
 
-bool back_button_clicked() {
-  return mouse_x >= back_button->x && mouse_x <= back_button->x + back_button->width &&
-         mouse_y >= back_button->y && mouse_y <= back_button->y + back_button->height;
+
+
+//Instructions
+static void create_back_button(int x, int y, enum xpm_image_type img_type) {
+  back_button = create_sprite(back_xpm, x, y, 0, 0, img_type);
 }
+
+static void draw_instructions_back_button() {
+  if (back_button == NULL)
+    create_back_button(350, 520, XPM_8_8_8); 
+  draw_sprite(back_button);
+}
+
+static void draw_instructions_mouse() {
+  bool over_back = mouse_x >= back_button->x && mouse_x <= back_button->x + back_button->width &&
+                   mouse_y >= back_button->y && mouse_y <= back_button->y + back_button->height;
+
+  if(cursor == NULL) 
+    create_cursor(mouse_x, mouse_y, XPM_8_8_8);
+  if(pointer == NULL)
+    create_pointer(mouse_x, mouse_y, XPM_8_8_8);
+
+  Sprite *mouse_sprite = over_back ? pointer : cursor;
+
+  mouse_sprite->x = mouse_x;
+  mouse_sprite->y = mouse_y;
+  draw_sprite(mouse_sprite);
+}
+
+bool back_button_clicked() {
+  return check_collision(to_draw, back_button);
+}
+
+void draw_instructions_screen() {
+  draw_sprite(background); 
+  draw_instructions_back_button();
+  draw_instructions_mouse();
+  vg_new_screen();
+}
+
+void destroy_instructions() {
+  if (background != NULL) {
+    destroy_sprite(background);
+    background = NULL;
+  }
+  if (back_button != NULL) {
+    destroy_sprite(back_button);
+    back_button = NULL;
+  }
+  if (cursor != NULL) {
+    destroy_sprite(cursor);
+    cursor = NULL;
+  }
+  if (pointer != NULL) {
+    destroy_sprite(pointer);
+    pointer = NULL;
+  }
+}
+

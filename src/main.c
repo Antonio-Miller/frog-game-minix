@@ -114,12 +114,17 @@ void (instructions_loop)() {
   while (mode == INSTRUCTIONS_MODE) {
     int ipc_status;
     message msg;
-    if (driver_receive(ANY, &msg, &ipc_status) != 0) continue;
+    if (driver_receive(ANY, &msg, &ipc_status) != 0) 
+      continue;
     if (is_ipc_notify(ipc_status)) {
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE:
           if (msg.m_notify.interrupts & BIT(timer_bit)) {
-            draw_instructions_screen();
+            global_counter++;
+            if (global_counter % GAME_TICK == 0) {
+              global_counter = 0;
+              draw_instructions_screen();
+            }
           }
           if (msg.m_notify.interrupts & BIT(mouse_bit)) {
             mouse_ih();
@@ -134,6 +139,7 @@ void (instructions_loop)() {
       }
     }
   }
+  destroy_instructions();
   m_disable_data_reporting();
   mouse_unsubscribe_int();
 }
@@ -197,6 +203,10 @@ int (proj_main_loop)(int argc, char *argv[]) {
 
       case GAME_MODE:
         game_loop();
+        break;
+
+      case INSTRUCTIONS_MODE:
+        instructions_loop();
         break;
 
       default: //QUIT
