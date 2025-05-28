@@ -17,7 +17,7 @@ extern bool valid_scancode;
 extern uint8_t scancode;
 extern int global_counter;
 
-typedef enum {MENU_MODE, GAME_MODE, QUIT} ProgramMode;
+typedef enum {MENU_MODE, GAME_MODE, INSTRUCTIONS_MODE, QUIT} ProgramMode;
 ProgramMode mode = MENU_MODE;
 
 
@@ -77,6 +77,10 @@ void (menu_loop)() {
                 case PLAY:
                   mode = GAME_MODE;
                   break;
+
+                case INSTRUCTIONS:
+                  mode = INSTRUCTIONS_MODE;
+                  break;
                 
                 case EXIT:
                   mode = QUIT;
@@ -95,6 +99,41 @@ void (menu_loop)() {
     }
   }
   destroy_menu();
+  m_disable_data_reporting();
+  mouse_unsubscribe_int();
+}
+
+void (instructions_loop)() {
+  if (mouse_subscribe_int(&mouse_bit)) {
+    printf("Error subscribing mouse interrupts\n");
+    return;
+  }
+
+  m_enable_data_reporting();
+
+  while (mode == INSTRUCTIONS_MODE) {
+    int ipc_status;
+    message msg;
+    if (driver_receive(ANY, &msg, &ipc_status) != 0) continue;
+    if (is_ipc_notify(ipc_status)) {
+      switch (_ENDPOINT_P(msg.m_source)) {
+        case HARDWARE:
+          if (msg.m_notify.interrupts & BIT(timer_bit)) {
+            draw_instructions_screen();
+          }
+          if (msg.m_notify.interrupts & BIT(mouse_bit)) {
+            mouse_ih();
+            if (mouse_packet.lb && back_button_clicked()) {
+              mode = MENU_MODE;
+              break;
+            }
+          }
+          break;
+        default:
+          break;
+      }
+    }
+  }
   m_disable_data_reporting();
   mouse_unsubscribe_int();
 }
