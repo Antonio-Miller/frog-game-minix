@@ -52,3 +52,10 @@ void draw_points() {
         }
     }
 }
+
+void destroy_points() {
+    if (points.points_sprite != NULL) {
+        destroy_sprite(points.points_sprite);
+        points.points_sprite = NULL;
+    }
+}
