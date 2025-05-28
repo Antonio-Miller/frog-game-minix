@@ -1,6 +1,7 @@
 #include <lcom/lcf.h>
 #include "sprite.h"
 #include "menu.h"
+#include "I_O/video_card.h"
 
 static Sprite *background = NULL;
 static Sprite *pointer = NULL;
@@ -73,6 +74,31 @@ void game_draw_menu() {
   draw_play_button();
   draw_exit_button();
   draw_menu_mouse();
+  vg_new_screen();
+}
+
+void destroy_menu() {
+  if (background != NULL) {
+    destroy_sprite(background);
+    background = NULL;
+  }
+  if (pointer != NULL) {
+    destroy_sprite(pointer);
+    pointer = NULL;
+  }
+  if (cursor != NULL) {
+    destroy_sprite(cursor);
+    cursor = NULL;
+  }
+  if (play_button != NULL) {
+    destroy_sprite(play_button);
+    play_button = NULL;
+  }
+  if (exit_button != NULL) {
+    destroy_sprite(exit_button);
+    exit_button = NULL;
+  }
+  to_draw = NULL;
 }
 
 MenuOption select_menu_option() {
@@ -81,5 +107,5 @@ MenuOption select_menu_option() {
   else if (check_collision(to_draw, exit_button)) 
     return EXIT;
 
-  return NONE;
+  return NEITHER;
 }

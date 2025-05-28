@@ -66,6 +66,10 @@ void update_lanes() {
 }
 
 int game_init(unsigned x_res, unsigned y_res) {
+  game_over = false;
+  top_lane_index = 0;
+  cur_lane_index = 0;
+  bottom_lane_index = 0;
   for (int i = 0; i < NR_LANES; i++) {
     lanes[i] = create_lane(i, 0, y_res - (i + 1) * LANE_HEIGHT, LANE_HEIGHT, XPM_8_8_8);
     if (lanes[i] == NULL) {
@@ -108,7 +112,7 @@ void game_handle_input(uint8_t scancode) {
       points_up();
       break;
     case 0x50: // down
-      if(bottom_lane_index == 0) // Prevent moving down if at the bottom
+      if(bottom_lane_index == 0 && cur_lane_index == 0) // Prevent moving down if at the bottom
         break;
       else if(bottom_lane_index == cur_lane_index)
         move_down();
@@ -133,6 +137,16 @@ void game_handle_input(uint8_t scancode) {
 }
 
 bool game_is_over() {
-  return game_over || player->alive == false;
+  if(game_over || player->alive == false) {
+    destroy_player(player);
+    player = NULL;
+    for (int i = 0; i < NR_LANES; i++) {
+      destroy_lane(lanes[i]);
+      lanes[i] = NULL;
+    }
+    destroy_points();
+    return true;
+  }
+  return false;
 }
 

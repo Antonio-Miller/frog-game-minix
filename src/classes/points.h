@@ -15,6 +15,7 @@ void points_init();
 void points_up();
 void points_down();
 void draw_points();
+void destroy_points();
 
 static xpm_row_t points_xpm[] = {
     "62 8 2 1",

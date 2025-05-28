@@ -13,6 +13,9 @@ static uint8_t mouse_bit;
 
 extern struct packet mouse_packet;
 extern int mouse_x, mouse_y;
+extern bool valid_scancode;
+extern uint8_t scancode;
+extern int global_counter;
 
 typedef enum {MENU_MODE, GAME_MODE, QUIT} ProgramMode;
 ProgramMode mode = MENU_MODE;
@@ -42,28 +45,29 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-int(proj_main_loop)(int argc, char *argv[]) {
-  // Inicializar vídeo
-  if (vg_init(0x115) == NULL) return 1;
+void (menu_loop)() {
+  if (mouse_subscribe_int(&mouse_bit)) {
+    printf("Error subscribing mouse interrupts\n");
+    return;
+  }
 
-  // Subscrever timer e mouse para o menu
-  if (timer_subscribe_int(&timer_bit)) return 1;
-  if (mouse_subscribe_int(&mouse_bit)) return 1;
   m_enable_data_reporting();
 
-  int ipc_status;
-  message msg;
-  bool start_game = false;
-  bool exit = false;
-  
-  // Loop do MENU
-  while (!start_game && !exit) {
-    if (driver_receive(ANY, &msg, &ipc_status) != 0) continue;
+  while (mode == MENU_MODE) {
+    int ipc_status;
+    message msg;
+
+    if (driver_receive(ANY, &msg, &ipc_status) != 0) 
+      continue;
     if (is_ipc_notify(ipc_status)) {
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE:
           if (msg.m_notify.interrupts & BIT(timer_bit)) {
-            game_draw_menu();
+            global_counter++;
+            if (global_counter % GAME_TICK == 0) {
+              global_counter = 0;
+              game_draw_menu();
+            }
           }
           if (msg.m_notify.interrupts & BIT(mouse_bit)) {
             mouse_ih();
@@ -71,18 +75,18 @@ int(proj_main_loop)(int argc, char *argv[]) {
               MenuOption option = select_menu_option();
               switch (option) {
                 case PLAY:
-                  start_game = true;
                   mode = GAME_MODE;
                   break;
                 
                 case EXIT:
                   mode = QUIT;
-                  exit = true;
                   break;
+      
                 default:
                   break;
               }
             }
+            mouse_reset_packet();
           }
           break;
         default:
@@ -90,18 +94,27 @@ int(proj_main_loop)(int argc, char *argv[]) {
       }
     }
   }
-
-  // Sair do menu: unsubscribe mouse, subscribe teclado
+  destroy_menu();
   m_disable_data_reporting();
   mouse_unsubscribe_int();
-  if (kbd_subscribe_int(&kbd_bit)) return 1;
+}
 
-  // Inicializar o jogo
-  if(game_init(get_h_res(), get_v_res())) return 1;
+void (game_loop)() {
+  if (kbd_subscribe_int(&kbd_bit)) 
+    return;
+
+  if(game_init(get_h_res(), get_v_res())) {
+    kbd_unsubscribe_int();
+    return;
+  }
 
   // Loop do JOGO
-  while (!game_is_over() && !exit) {
-    if (driver_receive(ANY, &msg, &ipc_status) != 0) continue;
+  while (!game_is_over()) {
+    int ipc_status;
+    message msg;
+
+    if (driver_receive(ANY, &msg, &ipc_status) != 0) 
+      continue;
     if (is_ipc_notify(ipc_status)) {
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE:
@@ -114,8 +127,6 @@ int(proj_main_loop)(int argc, char *argv[]) {
           }
           if (msg.m_notify.interrupts & BIT(kbd_bit)) {
             kbc_ih();
-            extern bool valid_scancode;
-            extern uint8_t scancode;
             if (valid_scancode)
               game_handle_input(scancode);
           }
@@ -125,10 +136,35 @@ int(proj_main_loop)(int argc, char *argv[]) {
       }
     }
   }
-  // Cleanup
-  timer_unsubscribe_int();
+  mode = MENU_MODE;
   kbd_unsubscribe_int();
-  vg_exit();
-  return 0;
+}
+
+int (proj_main_loop)(int argc, char *argv[]) {
+  // Inicializar vídeo
+  if (vg_init(0x115) == NULL) 
+    return 1;
+  // Subscrever timer
+  if (timer_subscribe_int(&timer_bit)) {
+    vg_exit();
+    return 1;
+  }
+  
+  while(true) {
+    switch (mode) {
+      case MENU_MODE:
+        menu_loop();
+        break;
+
+      case GAME_MODE:
+        game_loop();
+        break;
+
+      default: //QUIT
+        timer_unsubscribe_int();
+        vg_exit();
+        return 0;
+    }
+  }
 }
 

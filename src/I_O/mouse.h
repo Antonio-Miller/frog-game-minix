@@ -22,5 +22,6 @@ int (kbc_disable_keyboard)();
 int (m_disable_data_reporting)();
 int (m_enable_data_reporting)();
 int (mouse_send_command)(uint8_t cmd);
+void (mouse_reset_packet)();
 
 #endif // MOUSE_HEADER

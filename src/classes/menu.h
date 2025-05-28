@@ -5,6 +5,7 @@
 typedef enum {PLAY, EXIT, NEITHER} MenuOption;
 void game_draw_menu();
 MenuOption select_menu_option();
+void destroy_menu();
 
 static xpm_row_t menu_background_xpm[] = {
 "800 600 518 2",
