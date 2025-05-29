@@ -14,7 +14,7 @@ int(util_get_MSB)(uint16_t val, uint8_t *msb) {
 int(util_sys_inb)(int port, uint8_t *value) {
   uint32_t temp;
   if (sys_inb(port, &temp) != 0)
-    return 1;
+    return -1;
   *value = (uint8_t) (0xFF & temp);
   return 0;
 }

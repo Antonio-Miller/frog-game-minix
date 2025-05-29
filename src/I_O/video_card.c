@@ -31,7 +31,7 @@ static int(get_mode_info)(uint16_t mode)
 {
   if (vbe_get_mode_info(mode, &inf))
   {
-    return 1;
+    return -1;
   }
   h_res = inf.XResolution;
   v_res = inf.YResolution;
@@ -71,7 +71,7 @@ int(set_mode)(uint16_t mode)
   if (sys_int86(&r86) != OK)
   {
     printf("\rvg_init: sys_int86() failed\n");
-    return 1;
+    return -1;
   }
   return 0;
 }
@@ -223,7 +223,7 @@ int(vg_flip_page)()
   if (sys_int86(&r86) != OK)
   {
     printf("\rvg_flip_page: sys_int86() failed\n");
-    return 1;
+    return -1;
   }
   return 0;
 }
