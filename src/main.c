@@ -105,7 +105,6 @@ void (menu_loop)() {
 
 void (instructions_loop)() {
   if (mouse_subscribe_int(&mouse_bit)) {
-    printf("Error subscribing mouse interrupts\n");
     return;
   }
 

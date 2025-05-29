@@ -7,28 +7,23 @@ static unsigned v_res;
 static unsigned bits_per_pixel;
 static uint8_t cur_buf = 0; // for page flipping
 
-unsigned(get_h_res)()
-{
+unsigned(get_h_res)() {
   return h_res;
 }
 
-unsigned(get_v_res)()
-{
+unsigned(get_v_res)() {
   return v_res;
 }
 
-unsigned(get_bits_per_pixel)()
-{
+unsigned(get_bits_per_pixel)() {
   return bits_per_pixel;
 }
 
-vbe_mode_info_t(get_mode_info_t)()
-{
+vbe_mode_info_t(get_mode_info_t)() {
   return inf;
 }
 
-static int(get_mode_info)(uint16_t mode)
-{
+static int(get_mode_info)(uint16_t mode) {
   if (vbe_get_mode_info(mode, &inf))
   {
     return -1;
@@ -39,8 +34,7 @@ static int(get_mode_info)(uint16_t mode)
   return 0;
 }
 
-static void(map_vram)(uint16_t mode)
-{
+static void(map_vram)(uint16_t mode) {
   struct minix_mem_range mr;
   unsigned int vram_base;
   unsigned int vram_size;
@@ -60,8 +54,7 @@ static void(map_vram)(uint16_t mode)
     panic("couldn't map video memory\n");
 }
 
-int(set_mode)(uint16_t mode)
-{
+int(set_mode)(uint16_t mode) {
   reg86_t r86;
   memset(&r86, 0, sizeof(r86));
   r86.intno = 0x10;
@@ -76,115 +69,55 @@ int(set_mode)(uint16_t mode)
   return 0;
 }
 
-void *(vg_init)(uint16_t mode)
-{
+void *(vg_init)(uint16_t mode) {
   map_vram(mode);
   if (set_mode(mode))
     return NULL;
   return video_mem;
 }
 
-int(vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color)
-{
-  /* Fallback in case someone still calls this: write len pixels at once */
-  uint8_t cbs = (bits_per_pixel + 7) / 8;
-  unsigned char *base = video_mem + (h_res * v_res * cbs * cur_buf);
-  unsigned char *dst = base + ((uint32_t)y * h_res + x) * cbs;
+int(vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
+  unsigned char *screen = video_mem + h_res * v_res * cur_buf;
+	uint8_t color_byte_size = (bits_per_pixel + 7)/8;
+	uint32_t pos = (y * h_res + x) * color_byte_size;
 
-  switch (cbs)
-  {
-  case 1:
-    memset(dst, (uint8_t)color, len);
-    break;
-  case 2:
-  {
-    uint16_t col16 = (uint16_t)color;
-    uint16_t *p16 = (uint16_t *)dst;
-    for (uint16_t i = 0; i < len; i++)
-      p16[i] = col16;
-    break;
-  }
-  case 3:
-    for (uint16_t i = 0; i < len; i++)
-    {
-      memcpy(dst + i * 3, &color, 3);
-    }
-    break;
-  case 4:
-  {
-    uint32_t *p32 = (uint32_t *)dst;
-    for (uint16_t i = 0; i < len; i++)
-      p32[i] = color;
-    break;
-  }
-  default:
-    /* unlikely */
-    for (uint16_t i = 0; i < len; i++)
-      memcpy(dst + i * cbs, &color, cbs);
-    break;
-  }
+	while(len) {
+		memcpy(screen + pos, &color, color_byte_size);
+		pos += color_byte_size;
+		len--;
+	}
 
-  return 0;
+	return 0;
 }
 
-int(vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color)
-{
-  uint8_t cbs = (bits_per_pixel + 7) / 8;
-  unsigned char *base = video_mem + (h_res * v_res * cbs * cur_buf);
+int(vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
+  while(height){
+		vg_draw_hline(x, y, width, color);
+		y++;
+		height--;
+	}
 
-  for (uint16_t row = 0; row < height; row++)
-  {
-    unsigned char *dst = base + (((uint32_t)(y + row) * h_res) + x) * cbs;
-    switch (cbs)
-    {
-    case 1:
-      memset(dst, (uint8_t)color, width);
-      break;
-    case 2:
-    {
-      uint16_t col16 = (uint16_t)color;
-      uint16_t *p16 = (uint16_t *)dst;
-      for (uint16_t i = 0; i < width; i++)
-        p16[i] = col16;
-      break;
-    }
-    case 3:
-      for (uint16_t i = 0; i < width; i++)
-        memcpy(dst + i * 3, &color, 3);
-      break;
-    case 4:
-    {
-      uint32_t *p32 = (uint32_t *)dst;
-      for (uint16_t i = 0; i < width; i++)
-        p32[i] = color;
-      break;
-    }
-    default:
-      for (uint16_t i = 0; i < width; i++)
-        memcpy(dst + i * cbs, &color, cbs);
-      break;
-    }
-  }
-  return 0;
+	return 0;
 }
 
-int(vg_draw_pixel)(uint16_t x, uint16_t y, uint32_t color)
-{
-  uint8_t cbs = (bits_per_pixel + 7) / 8;
-  unsigned char *base = video_mem + (h_res * v_res * cbs * cur_buf);
-  unsigned char *dst = base + ((uint32_t)y * h_res + x) * cbs;
-  memcpy(dst, &color, cbs);
-  return 0;
+int(vg_draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
+  uint8_t color_byte_size = (bits_per_pixel + 7)/8;
+	unsigned char *screen = video_mem + h_res * v_res * color_byte_size * cur_buf;
+	uint32_t pos = (y * h_res + x) * color_byte_size;
+
+	memcpy(screen + pos, &color, color_byte_size);
+
+	return 0;
 }
 
-int(vg_draw_xpm)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t *pixmap){
-  uint8_t cbs = (bits_per_pixel + 7) / 8;
-  unsigned char *base = video_mem + (h_res * v_res * cbs * cur_buf);
+int(vg_draw_xpm)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t *pixmap) {
+  uint8_t color_byte_size = (bits_per_pixel + 7) / 8;
+  unsigned char *base = video_mem + (h_res * v_res * color_byte_size * cur_buf);
 
   for (uint16_t row = 0; row < height; row++) {
-        unsigned char *dst = base + ((y + row) * h_res + x) * cbs;
-        unsigned char *src = pixmap + row * width * cbs;
-        memcpy(dst, src, width * cbs);
+        unsigned char *dst = base + ((y + row) * h_res + x) * color_byte_size;
+        unsigned char *src = pixmap + row * width * color_byte_size;
+        memcpy(dst, src, width * color_byte_size);
   }
 
   return 0;
@@ -209,8 +142,7 @@ int(vg_draw_xpm_with_transparency)(uint16_t x, uint16_t y, uint16_t width, uint1
   return 0;
 }
 
-int(vg_flip_page)()
-{
+int(vg_flip_page)() {
   reg86_t r86;
   memset(&r86, 0, sizeof(r86));
   r86.intno = 0x10;
@@ -228,16 +160,14 @@ int(vg_flip_page)()
   return 0;
 }
 
-int(vg_clean_page)()
-{
+int(vg_clean_page)() {
   uint8_t cbs = (bits_per_pixel + 7) / 8;
   memset(video_mem + h_res * v_res * cbs * cur_buf, 0,
          h_res * v_res * cbs);
   return 0;
 }
 
-int(vg_new_screen)()
-{
+int(vg_new_screen)() {
   vg_flip_page();
   cur_buf = !cur_buf;
   vg_clean_page();

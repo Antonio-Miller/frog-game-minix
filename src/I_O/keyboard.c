@@ -29,16 +29,16 @@ int(kbd_read_status)(uint8_t *st) {
 void(kbc_ih)() {
   uint8_t st;
   int tries = 0;
-  while (tries < MAX_WAIT) {
-    kbd_read_status(&st);
-    tries++;
-    if (st & OBF) {
+  while(tries < MAX_WAIT){
+  kbd_read_status(&st);
+  tries++;
+    if(st & OBF){
       util_sys_inb(KBC_OUT_BUF, &scancode);
 
-      if (!(st & (PARITY | TIMEOUT)))
-        valid_scancode = 1;
+      if(!(st & (PARITY | TIMEOUT)))
+          valid_scancode = 1;
       else
-        valid_scancode = 0;
+          valid_scancode = 0;
 
       return;
     }
