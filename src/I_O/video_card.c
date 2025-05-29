@@ -31,7 +31,7 @@ static int(get_mode_info)(uint16_t mode)
 {
   if (vbe_get_mode_info(mode, &inf))
   {
-    return 1;
+    return -1;
   }
   h_res = inf.XResolution;
   v_res = inf.YResolution;
@@ -71,7 +71,7 @@ int(set_mode)(uint16_t mode)
   if (sys_int86(&r86) != OK)
   {
     printf("\rvg_init: sys_int86() failed\n");
-    return 1;
+    return -1;
   }
   return 0;
 }
@@ -199,7 +199,7 @@ int(vg_draw_xpm_with_transparency)(uint16_t x, uint16_t y, uint16_t width, uint1
 
     for (uint16_t col = 0; col < width; col++) {
       uint32_t pixel_color = *pos + (*(pos + 1) << 8) + (*(pos + 2) << 16);
-      if(pixel_color != transparency_color) {
+      if(pixel_color != transparency_color && x + col < h_res && y + row < v_res) { // Check if pixel is transparent or out of bounds
         vg_draw_pixel(x + col, y + row, pixel_color);
       }
       pos +=cbs;
@@ -223,7 +223,7 @@ int(vg_flip_page)()
   if (sys_int86(&r86) != OK)
   {
     printf("\rvg_flip_page: sys_int86() failed\n");
-    return 1;
+    return -1;
   }
   return 0;
 }

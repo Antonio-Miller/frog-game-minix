@@ -33,7 +33,7 @@ static int generate_car(Lane *lane, int index) {
                 return 0; // Too close
             }
         }
-}
+    }
 
     int base_probability = 20;
     int lane_probability = lane->index * 5;

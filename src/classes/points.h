@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "sprite.h"
+#include "../sprite_images/points.xpm"
 
 typedef struct {
 	Sprite *points_sprite;
@@ -11,164 +12,35 @@ typedef struct {
 
 Points points;
 
+/*
+ * @brief This function allocates space and initializes a global Points struct.
+ * @see points.c for the implementation
+*/
 void points_init();
+
+/*
+ * @brief This function increments the points value by one.
+ * @see points.c for the implementation
+*/
 void points_up();
+
+/*
+ * @brief This function decrements the points value by one.
+ * @see points.c for the implementation
+*/
 void points_down();
+
+/*
+ * @brief This function draws the points.
+ * @see points.c for the implementation
+*/
 void draw_points();
 
-static xpm_row_t points_xpm[] = {
-    "62 8 2 1",
-    ".	c #FFFFFF",
-    " 	c #000000",
-    "........  ........  ........  ..    ..  ........  ........    ",
-    "........  ........  ........  ...   ..  ........  ........  ..",
-    "..    ..  ..    ..     ..     ....  ..     ..     ..        ..",
-    "........  ..    ..     ..     .. .. ..     ..     ......      ",
-    "........  ..    ..     ..     ..  ....     ..      ......     ",
-    "..        ..    ..     ..     ..   ...     ..           ..  ..",
-    "..        ........  ........  ..    ..     ..     ........  ..",
-    "..        ........  ........  ..    ..     ..     ........    ",
-};
-
-static xpm_row_t zero[] = {
-    "8 8 2 1",
-    ".	c #FFFFFF",
-    " 	c #000000",
-    "  ....  ",
-    " ...... ",
-    "...  ...",
-    "..    ..",
-    "..    ..",
-    "...  ...",
-    " ...... ",
-    "  ....  "
-};
-
-static xpm_row_t one[] = {
-    "8 8 2 1",
-    ".	c #FFFFFF",
-    " 	c #000000",
-    "   ..   ",
-    "  ...   ",
-    " .. ..  ",
-    "    ..  ",
-    "    ..  ",
-    "    ..  ",
-    "  ......",
-    "  ......"
-};
-
-static xpm_row_t two[] = {
-    "8 8 2 1",
-    ".	c #FFFFFF",
-    " 	c #000000",
-    "  ....  ",
-    " ...... ",
-    "..... ..",
-    "    ... ",
-    "  ...   ",
-    " ..     ",
-    "........",
-    "........"
-};
-
-static xpm_row_t three[] = {
-    "8 8 2 1",
-    ".	c #FFFFFF",
-    " 	c #000000",
-    "  ....  ",
-    " ...... ",
-    "..... ..",
-    "   .... ",
-    "     .. ",
-    "..... ..",
-    " ...... ",
-    "  ....  "
-};
-
-static xpm_row_t four[] = {
-    "8 8 2 1",
-    ".	c #FFFFFF",
-    " 	c #000000",
-    "   ...  ",
-    "  ....  ",
-    " .. ..  ",
-    "..  ..  ",
-    "........",
-    "........",
-    "    ..  ",
-    "    ..  "
-};
-
-static xpm_row_t five[] = {
-    "8 8 2 1",
-    ".	c #FFFFFF",
-    " 	c #000000",
-    " .......",
-    " .......",
-    " ..     ",
-    " ...... ",
-    "     ...",
-    "..... ..",
-    " ...... ",
-    "  ....  "
-};
-
-static xpm_row_t six[] = {
-    "8 8 2 1",
-    ".	c #FFFFFF",
-    " 	c #000000",
-    "  ....  ",
-    " ...... ",
-    "...     ",
-    "......  ",
-    "...  .. ",
-    "..   .. ",
-    " ...... ",
-    "  ....  "
-};
-
-static xpm_row_t seven[] = {
-    "8 8 2 1",
-    ".	c #FFFFFF",
-    " 	c #000000",
-    "........",
-    "........",
-    "     .. ",
-    "    ..  ",
-    "   ..   ",
-    "  ..    ",
-    " ..     ",
-    "..      "
-};
-
-static xpm_row_t eight[] = {
-    "8 8 2 1",
-    ".	c #FFFFFF",
-    " 	c #000000",
-    "  ....  ",
-    " ...... ",
-    "...  ...",
-    " ...... ",
-    "...  ...",
-    "..    ..",
-    " ...... ",
-    "  ....  "
-};
-
-static xpm_row_t nine[] = {
-    "8 8 2 1",
-    ".	c #FFFFFF",
-    " 	c #000000",
-    "  ....  ",
-    " ...... ",
-    "...  .. ",
-    " ...... ",
-    "     .. ",
-    "...  .. ",
-    " ...... ",
-    "  ....  "
-};
+/*
+ * @brief This function frees the memory allocated to the points sprite.
+ * @see points.c for the implementation
+*/
+void destroy_points();
 
 static xpm_row_t* digits_xpm[] = {
     zero, one, two, three, four, five, six, seven, eight, nine

@@ -1,5 +1,5 @@
 /* XPM */
-static char * rules_xpm[] = {
+static xpm_row_t rules_xpm[] = {
 "800 600 331 2",
 "  	c None",
 ". 	c #AFA7A7",
