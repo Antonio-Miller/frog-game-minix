@@ -1,5 +1,7 @@
-/* XPM */
-static char * lane_xpm[] = {
+#ifndef LANE_XPM
+#define LANE_XPM
+
+static xpm_row_t lane_xpm[] = {
 "800 100 2 1",
 " 	c #5E5E5E",
 ".	c #EEEFE7",
@@ -103,3 +105,4 @@ static char * lane_xpm[] = {
 "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ",
 "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ",
 "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                "};
+#endif // LANE_XPM_H

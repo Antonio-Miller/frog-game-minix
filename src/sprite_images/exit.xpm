@@ -1,5 +1,7 @@
-/* XPM */
-static char * exit_xpm[] = {
+#ifndef EXIT_XPM
+#define EXIT_XPM
+
+static xpm_row_t exit_xpm[] = {
 "200 50 184 2",
 "  	c #5E5E5E",
 ". 	c #635A5A",
@@ -235,3 +237,4 @@ static char * exit_xpm[] = {
 "                                                                                                                                                                                                                                                                                                                                                                                                                ",
 "                                                                                                                                                                                                                                                                                                                                                                                                                ",
 "                                                                                                                                                                                                                                                                                                                                                                                                                "};
+#endif // EXIT_XPM

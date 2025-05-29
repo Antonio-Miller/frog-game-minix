@@ -1,3 +1,5 @@
+#ifndef RED_CAR_RIGHT_XPM
+#define RED_CAR_RIGHT_XPM
 
 static xpm_row_t red_car_right[] = {
 	"100 93 9 1",
@@ -103,3 +105,4 @@ static xpm_row_t red_car_right[] = {
 	"                                                                                                    ",
 	"                                                                                                    ",
 	"                                                                                                    ",};
+#endif // RED_CAR_RIGHT_XPM

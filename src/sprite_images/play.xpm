@@ -1,5 +1,7 @@
-/* XPM */
-static char * play_xpm[] = {
+#ifndef PLAY_XPM
+#define PLAY_XPM
+
+static xpm_row_t play_xpm[] = {
 "200 50 293 2",
 "  	c #5E5E5E",
 ". 	c #474747",
@@ -344,3 +346,4 @@ static char * play_xpm[] = {
 "                                                                                                                                                                                                                                                                                                                                                                                                                ",
 "                                                                                                                                                                                                                                                                                                                                                                                                                ",
 "                                                                                                                                                                                                                                                                                                                                                                                                                "};
+#endif // PLAY_XPM

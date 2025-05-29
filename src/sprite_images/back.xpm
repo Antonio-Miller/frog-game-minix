@@ -1,5 +1,7 @@
-/* XPM */
-static char * back_xpm[] = {
+#ifndef BACK_XPM
+#define BACK_XPM
+
+static xpm_row_t back_xpm[] = {
 "200 50 120 2",
 "  	c #5E5E5E",
 ". 	c #8F5454",
@@ -171,3 +173,4 @@ static char * back_xpm[] = {
 "                                                                                                                                                                                                                                                                                                                                                                                                                ",
 "                                                                                                                                                                                                                                                                                                                                                                                                                ",
 "                                                                                                                                                                                                                                                                                                                                                                                                                "};
+#endif // BACK_XPM

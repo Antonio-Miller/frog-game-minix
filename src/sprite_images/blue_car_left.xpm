@@ -1,4 +1,6 @@
-/* XPM */ /*blue_car_left*/
+#ifndef BLUE_CAR_LEFT_XPM
+#define BLUE_CAR_LEFT_XPM
+
 static xpm_row_t blue_car_left[] = {
 	"100 93 9 1",
 	" 	c #5E5E5E",
@@ -103,5 +105,5 @@ static xpm_row_t blue_car_left[] = {
 	"                                                                                                    ",
 	"                                                                                                    ",
 	"                                                                                                    "};
-	
+#endif // BLUE_CAR_LEFT_XPM
 

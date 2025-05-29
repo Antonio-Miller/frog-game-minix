@@ -1,5 +1,7 @@
-/* XPM */
-static char * instructions_xpm[] = {
+#ifndef INSTRUCTIONS_XPM
+#define INSTRUCTIONS_XPM
+
+static xpm_row_t instructions_xpm[] = {
 "200 50 93 2",
 "  	c #5E5E5E",
 ". 	c #32325F",
@@ -144,3 +146,4 @@ static char * instructions_xpm[] = {
 "                                                                                                                                                                                                                                                                                                                                                                                                                ",
 "                                                                                                                                                                                                                                                                                                                                                                                                                ",
 "                                                                                                                                                                                                                                                                                                                                                                                                                "};
+#endif // INSTRUCTIONS_XPM
