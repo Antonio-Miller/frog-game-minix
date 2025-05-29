@@ -1,9 +1,9 @@
-/* XPM */ /*blue_car_left*/
-static char * car2_xpm[] = {
+/* XPM */ /*green_car_left*/
+static xpm_row_t green_car_left[] = {
 	"100 93 9 1",
 	" 	c #5E5E5E",
 	".	c #000000",
-	"+	c #0000FF",
+	"+	c #00CC00",
 	"@	c #C06105",
 	"#	c #FF0000",
 	"$	c #FFFEFD",
@@ -103,4 +103,5 @@ static char * car2_xpm[] = {
 	"                                                                                                    ",
 	"                                                                                                    ",
 	"                                                                                                    "};
+	
 

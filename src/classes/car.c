@@ -8,9 +8,11 @@ Car *create_car(int x, int y, int xspeed, int yspeed, enum xpm_image_type img_ty
 		return NULL;
 
 	if (xspeed >= 0) { //right direction
-		result->car = create_sprite(cars_right_xpm[0], x, y, xspeed, yspeed, img_type);
+		int sprite_ind = rand() % 3; //Choose between the three available right-facing car sprites
+		result->car = create_sprite(cars_right_xpm[sprite_ind], x, y, xspeed, yspeed, img_type);
 	} else { //left direction
-		result->car = create_sprite(cars_left_xpm[0], x, y, xspeed, yspeed, img_type);
+		int sprite_ind = rand() % 3; //Choose between the three available left-facing car sprites
+		result->car = create_sprite(cars_left_xpm[sprite_ind], x, y, xspeed, yspeed, img_type);
 	}
 
 	if(result->car == NULL) {
