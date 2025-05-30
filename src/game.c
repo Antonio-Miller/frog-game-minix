@@ -23,7 +23,6 @@ void game_draw_screen() {
   }
   draw_player(player);
   draw_points();
-  draw_highscore();
   vg_new_screen();
 }
 
@@ -71,9 +70,6 @@ int game_init(unsigned x_res, unsigned y_res) {
   top_lane_index = 0;
   cur_lane_index = 0;
   bottom_lane_index = 0;
-
-  highscore = load_highscore();
-
   for (int i = 0; i < NR_LANES; i++) {
     lanes[i] = create_lane(i, 0, y_res - (i + 1) * LANE_HEIGHT, LANE_HEIGHT, XPM_8_8_8);
     if (lanes[i] == NULL) {
@@ -149,9 +145,6 @@ bool game_is_over() {
       lanes[i] = NULL;
     }
     destroy_points();
-
-    save_highscore(highscore);
-
     return true;
   }
   return false;

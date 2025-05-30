@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include "sprite.h"
 #include "../sprite_images/points.xpm"
-#include "../sprite_images/highscore.xpm"
 
 typedef struct {
 	Sprite *points_sprite;
@@ -12,11 +11,6 @@ typedef struct {
 } Points;
 
 Points points;
-
-extern int highscore;
-
-int load_highscore();
-void save_highscore(int score);
 
 /*
  * @brief This function allocates space and initializes a global Points struct.
@@ -47,8 +41,6 @@ void draw_points();
  * @see points.c for the implementation
 */
 void destroy_points();
-
-void draw_highscore();
 
 static xpm_row_t* digits_xpm[] = {
     zero, one, two, three, four, five, six, seven, eight, nine
