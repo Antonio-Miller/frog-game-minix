@@ -1,7 +1,10 @@
 #include <lcom/lcf.h>
 #include "points.h"
 
-#define HIGHSCORE_FILE "/home/lcom/labs/proj/highscore.txt"
+//#define HIGHSCORE_FILE "/home/lcom/labs/proj/highscore.txt"
+#define HIGHSCORE_FILE "highscore.txt"
+//#define HIGHSCORE_FILE "/home/lcom/labs/g/proj/highscore.txt"
+
 
 int highscore = 0;
 static Sprite *highscore_sprite = NULL;

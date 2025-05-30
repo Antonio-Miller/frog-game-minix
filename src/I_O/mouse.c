@@ -41,7 +41,7 @@ int(mouse_read_ack)(uint8_t *ack) {
 			util_sys_inb(KBC_OUT_BUF, ack);
 			return 0;
 		}
-		tickdelay(DELAY_US);
+		//tickdelay(DELAY_US);
 	}
 	return -1;
 }

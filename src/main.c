@@ -46,12 +46,14 @@ int main(int argc, char *argv[]) {
 }
 
 void (menu_loop)() {
+
+  m_enable_data_reporting();
+
   if (mouse_subscribe_int(&mouse_bit)) {
     printf("Error subscribing mouse interrupts\n");
     return;
   }
 
-  m_enable_data_reporting();
 
   while (mode == MENU_MODE) {
     int ipc_status;
@@ -99,16 +101,19 @@ void (menu_loop)() {
     }
   }
   destroy_menu();
-  m_disable_data_reporting();
   mouse_unsubscribe_int();
+  m_disable_data_reporting();
+
 }
 
 void (instructions_loop)() {
+
+  m_enable_data_reporting();
+
   if (mouse_subscribe_int(&mouse_bit)) {
     return;
   }
 
-  m_enable_data_reporting();
 
   while (mode == INSTRUCTIONS_MODE) {
     int ipc_status;
@@ -140,8 +145,9 @@ void (instructions_loop)() {
     }
   }
   destroy_instructions();
-  m_disable_data_reporting();
   mouse_unsubscribe_int();
+  m_disable_data_reporting();
+
 }
 
 void (game_loop)() {
